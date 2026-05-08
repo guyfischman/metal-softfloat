@@ -1,0 +1,82 @@
+[workspace]
+
+[package]
+name = "metal-softfloat-core"
+version = "0.1.0"
+edition = "2021"
+license = "MIT AND BSD-3-Clause"
+description = "IEEE-754 binary64 (f64) software emulation for Apple Metal compute kernels and pure Rust"
+repository = "https://github.com/guyfischman/metal-softfloat"
+readme = "README.md"
+keywords = ["metal", "f64", "ieee754", "softfloat", "gpu"]
+categories = ["graphics", "mathematics", "no-std::no-alloc"]
+
+# Build docs.rs on macOS so the `gpu` module (gated on
+# `target_os = "macos"`) actually appears in the rendered docs.
+[package.metadata.docs.rs]
+default-target = "x86_64-apple-darwin"
+all-features = true
+
+[features]
+default = []
+# `gpu`: enable the host-side Metal dispatchers (`metal_softfloat_core::gpu`).
+# `metal-rs` only compiles on macOS; on other platforms the dependency is
+# absent (target-gated below), the `gpu` module is cfg'd out in lib.rs,
+# and the crate still builds as a pure-Rust reference (`softfloat_ref`).
+gpu = ["dep:metal"]
+# `ftz`: flush subnormal inputs/outputs to zero. Default off — gradual
+# underflow is on by default for IEEE-754 conformance. Enable for HPC
+# code that values throughput over subnormal precision.
+ftz = []
+# `testfloat`: enable the Berkeley TestFloat conformance integration test
+# (tests/testfloat_conformance.rs). Off by default because it shells out
+# to the external `testfloat_gen` binary, which is not part of the crate.
+# See docs/ieee754_conformance.md for install and usage.
+testfloat = []
+# `testfloat-gpu`: TestFloat conformance harness that drives the *MSL*
+# kernels directly. Vendors Berkeley SoftFloat-3e + TestFloat-3e case
+# generators under vendor/, links them via build.rs, and pipes vectors
+# straight into `gpu::*_batch` dispatchers. Avoids the testfloat_gen
+# pipe bottleneck that limits the CPU `testfloat` harness. macOS only.
+testfloat-gpu = ["gpu"]
+
+[target.'cfg(target_os = "macos")'.dependencies]
+metal = { version = "0.33", optional = true }
+
+[build-dependencies]
+cc = "1.0"
+
+[dev-dependencies]
+rand = "0.8"
+rayon = "1.8"
+criterion = { version = "0.5", default-features = false, features = ["cargo_bench_support"] }
+
+[[bin]]
+name = "gen-msl-header"
+path = "src/bin/gen_msl_header.rs"
+
+# Examples that link against the host-side Metal dispatchers require both
+# the `gpu` feature and macOS (where `metal-rs` compiles).
+[[example]]
+name = "throughput_demo"
+path = "examples/throughput_demo.rs"
+required-features = ["gpu"]
+
+[[example]]
+name = "chain_sweep"
+path = "examples/chain_sweep.rs"
+required-features = ["gpu"]
+
+# Per-op throughput bench. macOS-only because the GPU dispatchers need
+# Metal; on other platforms the `cpu`-side benches still run.
+[[bench]]
+name = "op_throughput"
+harness = false
+required-features = ["gpu"]
+
+[lints.rust]
+unsafe_op_in_unsafe_fn = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+module_name_repetitions = "allow"

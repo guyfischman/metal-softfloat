@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish dist artifacts
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Verify dist/softfloat64.metal is up to date
+        run: cargo run --quiet --bin gen-msl-header -- --check
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/softfloat64.metal
+            dist/softfloat64.h
+          generate_release_notes: true
+          fail_on_unmatched_files: true
