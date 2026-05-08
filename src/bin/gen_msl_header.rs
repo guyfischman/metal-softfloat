@@ -22,9 +22,9 @@ use std::path::PathBuf;
 
 const HEADER: &str = "\
 // dist/softfloat64.metal — redistributable IEEE-754 binary64 softfloat
-// for Apple Metal. Generated from metal-softfloat-core's
+// for Apple Metal. Generated from metal-softfloat's
 // shaders/softfloat.metal; do not hand-edit. Re-run the generator with
-// `cargo run -p metal-softfloat-core --bin gen-msl-header`.
+// `cargo run -p metal-softfloat --bin gen-msl-header`.
 //
 // SPDX-License-Identifier: BSD-3-Clause AND MIT
 //
@@ -103,7 +103,7 @@ const HEADER: &str = "\
 // Compile-time switches:
 //   -DSOFTFLOAT_FTZ  flush subnormal inputs/outputs to zero.
 //
-// IEEE-754 conformance: see metal-softfloat-core/docs/ieee754_conformance.md.
+// IEEE-754 conformance: see metal-softfloat/docs/ieee754_conformance.md.
 // Limitation: __softfloat64_fdiv / __softfloat64_fsqrt currently flush
 // subnormal *outputs* to zero. Subnormal inputs are handled correctly.
 // Other ops (fadd, fsub, fmul, fma) produce gradual-underflow output.
@@ -136,7 +136,7 @@ fn main() {
         let existing = fs::read_to_string(&dst).unwrap_or_default();
         if existing != out {
             eprintln!(
-                "{} is stale; re-run `cargo run -p metal-softfloat-core --bin gen-msl-header`",
+                "{} is stale; re-run `cargo run -p metal-softfloat --bin gen-msl-header`",
                 dst.display()
             );
             std::process::exit(1);

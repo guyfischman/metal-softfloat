@@ -1,6 +1,6 @@
 # IEEE-754 binary64 conformance
 
-This document tracks the conformance status of `metal-softfloat-core`
+This document tracks the conformance status of `metal-softfloat`
 against IEEE-754-2019 binary64 for arithmetic operations, the fused
 multiply-add, and conversions. Tests live in
 [`src/softfloat_ref.rs`](../src/softfloat_ref.rs) and

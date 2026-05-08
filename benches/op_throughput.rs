@@ -8,7 +8,7 @@
 //! Run:
 //!
 //! ```sh
-//! cargo bench -p metal-softfloat-core --features gpu --bench op_throughput
+//! cargo bench -p metal-softfloat --features gpu --bench op_throughput
 //! ```
 //!
 //! Criterion writes per-op timing summaries plus an HTML report under

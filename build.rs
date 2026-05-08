@@ -1,4 +1,4 @@
-// Build script for metal-softfloat-core.
+// Build script for metal-softfloat.
 //
 // Only does work when the `testfloat-gpu` feature is enabled. In that
 // case it compiles the vendored Berkeley SoftFloat-3e + TestFloat-3e
