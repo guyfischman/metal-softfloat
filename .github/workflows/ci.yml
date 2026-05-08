@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # The crate's home turf. Builds with all features, runs the pure-Rust
+  # unit tests, and verifies dist/softfloat64.metal is in sync with the
+  # generator. The `gpu::*_batch` runtime tests need a real Metal device
+  # and so are not run here — GitHub-hosted macOS runners do not
+  # reliably expose one.
+  macos:
+    name: macOS (arm64)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Build (default features)
+        run: cargo build --verbose
+
+      - name: Build (--features gpu)
+        run: cargo build --verbose --features gpu
+
+      - name: Build (--features ftz)
+        run: cargo build --verbose --features ftz
+
+      - name: Build (all features, all targets)
+        run: cargo build --verbose --all-features --all-targets
+
+      - name: Lib tests (softfloat_ref full-domain fuzz)
+        run: cargo test --release --lib
+
+      - name: dist/softfloat64.metal drift check
+        run: cargo test --release --test dist_drift
+
+  # Cross-platform sanity. The pure-Rust softfloat_ref reference is
+  # `#![no_std]`, so it has to build cleanly off macOS. The `gpu`
+  # feature is target-gated and reduces to a no-op on non-macOS, so
+  # enabling it here is a useful smoke test that the cfg gates hold.
+  linux:
+    name: Linux (no_std reference)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Check (default features)
+        run: cargo check --verbose
+
+      - name: Check (--features gpu, target-gated to no-op)
+        run: cargo check --verbose --features gpu
+
+      - name: Lib tests (softfloat_ref)
+        run: cargo test --release --lib
