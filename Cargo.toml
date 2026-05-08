@@ -1,7 +1,7 @@
 [workspace]
 
 [package]
-name = "metal-softfloat-core"
+name = "metal-softfloat"
 version = "0.1.0"
 edition = "2021"
 license = "MIT AND BSD-3-Clause"
