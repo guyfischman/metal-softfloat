@@ -2,16 +2,15 @@
 //!
 //! Reads `shaders/softfloat.metal` (the canonical MSL source — what the
 //! Rust crate's GPU dispatchers `include_str!` and what every test runs
-//! against) and prepends the redistribution header (license + version
-//! + brief usage notes). The body is copied verbatim — the canonical
-//! file already gates its test/benchmark kernels behind
-//! `#ifdef METAL_SOFTFLOAT_TESTS`, so a public consumer that doesn't
-//! define the macro gets just the public `__softfloat64_*` API.
+//! against), strips the in-tree test/benchmark scaffolding (everything
+//! from the `// --- Test / benchmark kernels ---` banner onward), and
+//! prepends the redistribution header (license + brief usage notes).
+//! The result is the strict public API surface only.
 //!
 //! Run with:
 //!
 //! ```sh
-//! cargo run -p metal-softfloat-core --bin gen-msl-header
+//! cargo run --bin gen-msl-header
 //! ```
 //!
 //! CI invokes this with `-- --check` to catch drift between
@@ -102,10 +101,7 @@ const HEADER: &str = "\
 // bit-cast between native floats and these integer payloads.
 //
 // Compile-time switches:
-//   -DSOFTFLOAT_FTZ          flush subnormal inputs/outputs to zero.
-//   -DMETAL_SOFTFLOAT_TESTS  compile in this crate's test/benchmark
-//                            kernels (not part of the public API; only
-//                            useful for the in-tree fuzz harness).
+//   -DSOFTFLOAT_FTZ  flush subnormal inputs/outputs to zero.
 //
 // IEEE-754 conformance: see metal-softfloat-core/docs/ieee754_conformance.md.
 // Limitation: __softfloat64_fdiv / __softfloat64_fsqrt currently flush
@@ -114,16 +110,26 @@ const HEADER: &str = "\
 
 ";
 
+// Anchor that marks the start of the in-tree test/benchmark scaffolding
+// in `shaders/softfloat.metal`. Everything from this banner onward is
+// stripped from the redistributable dist file.
+const TEST_SCAFFOLDING_ANCHOR: &str = "// --- Test / benchmark kernels";
+
 fn main() {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let src = manifest.join("shaders/softfloat.metal");
     let dst = manifest.join("dist/softfloat64.metal");
 
     let body = fs::read_to_string(&src).expect("read shaders/softfloat.metal");
+    let public = body
+        .split_once(TEST_SCAFFOLDING_ANCHOR)
+        .map_or(body.as_str(), |(before, _)| before)
+        .trim_end();
 
-    let mut out = String::with_capacity(HEADER.len() + body.len());
+    let mut out = String::with_capacity(HEADER.len() + public.len() + 1);
     out.push_str(HEADER);
-    out.push_str(&body);
+    out.push_str(public);
+    out.push('\n');
 
     let check_only = std::env::args().any(|a| a == "--check");
     if check_only {

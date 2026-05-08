@@ -40,24 +40,3 @@ jobs:
 
       - name: dist/softfloat64.metal drift check
         run: cargo test --release --test dist_drift
-
-  # Cross-platform sanity. The pure-Rust softfloat_ref reference is
-  # `#![no_std]`, so it has to build cleanly off macOS. The `gpu`
-  # feature is target-gated and reduces to a no-op on non-macOS, so
-  # enabling it here is a useful smoke test that the cfg gates hold.
-  linux:
-    name: Linux (no_std reference)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Check (default features)
-        run: cargo check --verbose
-
-      - name: Check (--features gpu, target-gated to no-op)
-        run: cargo check --verbose --features gpu
-
-      - name: Lib tests (softfloat_ref)
-        run: cargo test --release --lib

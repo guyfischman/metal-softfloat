@@ -1,5 +1,4 @@
 /scripts/
-demo.cast
 /target/
 Cargo.lock
 .DS_Store
