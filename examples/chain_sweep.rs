@@ -15,7 +15,7 @@
 use std::time::Instant;
 
 use metal::{CompileOptions, Device, MTLResourceOptions, MTLSize};
-use metal_softfloat_core::METAL_SOURCE;
+use metal_softfloat::METAL_SOURCE;
 
 const SWEEP_POINTS: &[u32] = &[16, 64, 256, 512, 1024, 2048, 4096, 8192];
 const THREADS: usize = 200_000;

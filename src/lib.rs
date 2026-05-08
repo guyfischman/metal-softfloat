@@ -112,7 +112,7 @@ pub mod softfloat_ref;
 ///
 /// ```ignore
 /// use metal::{CompileOptions, Device};
-/// use metal_softfloat_core::METAL_SOURCE;
+/// use metal_softfloat::METAL_SOURCE;
 ///
 /// let device = Device::system_default().unwrap();
 /// let library = device

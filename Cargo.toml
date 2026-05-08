@@ -2,7 +2,7 @@
 
 [package]
 name = "metal-softfloat"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT AND BSD-3-Clause"
 description = "IEEE-754 binary64 (f64) software emulation for Apple Metal compute kernels and pure Rust"
@@ -19,7 +19,7 @@ all-features = true
 
 [features]
 default = []
-# `gpu`: enable the host-side Metal dispatchers (`metal_softfloat_core::gpu`).
+# `gpu`: enable the host-side Metal dispatchers (`metal_softfloat::gpu`).
 # `metal-rs` only compiles on macOS; on other platforms the dependency is
 # absent (target-gated below), the `gpu` module is cfg'd out in lib.rs,
 # and the crate still builds as a pure-Rust reference (`softfloat_ref`).

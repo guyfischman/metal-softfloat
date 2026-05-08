@@ -29,7 +29,7 @@ use std::hint::black_box;
 use std::time::Duration;
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
-use metal_softfloat_core::{gpu, softfloat_ref, RoundingMode};
+use metal_softfloat::{gpu, softfloat_ref, RoundingMode};
 use rand::{Rng, SeedableRng};
 
 // Native-f64 reference ops, used as the "what the hardware FPU costs"

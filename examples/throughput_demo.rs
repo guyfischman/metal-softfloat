@@ -43,7 +43,7 @@
 use std::thread;
 use std::time::Instant;
 
-use metal_softfloat_core::{gpu, softfloat_ref, RoundingMode};
+use metal_softfloat::{gpu, softfloat_ref, RoundingMode};
 use rand::{Rng, SeedableRng};
 
 fn rand_normal(rng: &mut impl Rng) -> f64 {

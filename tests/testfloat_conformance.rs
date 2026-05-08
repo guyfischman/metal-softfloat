@@ -20,7 +20,7 @@
 
 #![cfg(all(feature = "testfloat", not(feature = "ftz")))]
 
-use metal_softfloat_core::{softfloat_ref, RoundingMode};
+use metal_softfloat::{softfloat_ref, RoundingMode};
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
 

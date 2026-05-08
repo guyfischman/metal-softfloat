@@ -7,7 +7,7 @@ integer-only operations on the IEEE-754 bit pattern:
   header. Drop into any Apple Metal compute kernel; `#include` it and
   call the `__softfloat64_*` functions on `ulong` bit patterns. No host
   dependency. This is the one you'll want to use - it's fast and gpu-resident.
-- **`metal_softfloat_core::softfloat_ref`** — pure-Rust f64 emulation,
+- **`metal_softfloat::softfloat_ref`** — pure-Rust f64 emulation,
   bit-exact with the MSL implementation. In case you need the same
   deterministic f64 result on a non-Apple host (lockstep simulators,
   consensus-critical math, GPU-vs-CPU validation). Only for verification - this implementation is quite slow.
@@ -240,7 +240,7 @@ need to read the file off disk:
 
 ```rust
 use metal::{CompileOptions, Device};
-use metal_softfloat_core::METAL_SOURCE;
+use metal_softfloat::METAL_SOURCE;
 
 let device = Device::system_default().unwrap();
 let library = device
@@ -250,7 +250,7 @@ let library = device
 
 #### A note on the `gpu` Cargo feature
 
-The `gpu` feature gates a `metal_softfloat_core::gpu` module that wraps
+The `gpu` feature gates a `metal_softfloat::gpu` module that wraps
 each `__softfloat64_*` kernel in a Rust `*_batch` / `*_chain` helper.
 **Those helpers exist for this crate's tests, fuzzers, and benchmarks
 — not as a general-purpose GPU API.** Each call:
@@ -276,7 +276,7 @@ the implementation is integer-only, the result is identical on every
 platform — useful for lockstep / consensus-critical math:
 
 ```rust
-use metal_softfloat_core::{softfloat_ref, RoundingMode};
+use metal_softfloat::{softfloat_ref, RoundingMode};
 
 let x = 1.0_f64.to_bits();
 let y = 2.0_f64.to_bits();

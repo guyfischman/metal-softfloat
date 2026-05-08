@@ -104,7 +104,7 @@
 //   Cargo feature on the Rust side. Default: gradual underflow on for
 //   every op (fadd/fsub/fmul/fdiv/fsqrt/fma).
 //
-// Each op's algorithm mirrors `metal_softfloat_core::softfloat_ref`
+// Each op's algorithm mirrors `metal_softfloat::softfloat_ref`
 // in the Rust crate — see that module for algorithm commentary and
 // the reference tests that validated bit-exactness against native f64.
 

@@ -25,7 +25,7 @@
 
 use std::sync::Mutex;
 
-use metal_softfloat_core::{gpu, RoundingMode};
+use metal_softfloat::{gpu, RoundingMode};
 
 // ---- SoftFloat-3e FFI ------------------------------------------------------
 
